@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: java-lab-arcade
+    env: docker
+    plan: starter
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ENABLE_JAVA_RUNNER
+        value: "false"

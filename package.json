@@ -1,0 +1,14 @@
+{
+  "name": "java-lab-arcade",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive Java fundamentals practice site with local compile-and-run support.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

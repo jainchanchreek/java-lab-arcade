@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Java Lab Arcade</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Learning modules">
+        <div class="brand">
+          <img class="brand-logo" src="assets/logo.svg" alt="Java Lab Arcade logo">
+          <div>
+            <strong>Java Lab Arcade</strong>
+            <span>OO fundamentals, playable</span>
+          </div>
+        </div>
+        <nav id="moduleNav" class="module-nav"></nav>
+      </aside>
+
+      <main>
+        <section class="hero-panel">
+          <div class="hero-copy">
+            <p class="eyebrow">Interactive course map</p>
+            <h1>Learn Java by solving, sorting, filling, and running code.</h1>
+            <p>Original mini-lessons based on the same beginner-to-object-oriented journey: syntax, objects, variables, methods, inheritance, exceptions, collections, threads, and packaging.</p>
+          </div>
+          <img src="assets/lab-board.svg" alt="Illustrated Java arcade lab with code cards and controls">
+        </section>
+
+        <section class="lesson-grid">
+          <article class="panel lesson-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Current lesson</p>
+                <h2 id="lessonTitle"></h2>
+              </div>
+              <span id="lessonBadge" class="badge"></span>
+            </div>
+            <p id="lessonText"></p>
+            <div id="conceptChips" class="chips"></div>
+          </article>
+
+          <article class="panel progress-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Progress</p>
+                <h2>Skill Meter</h2>
+              </div>
+              <span id="scoreValue" class="score">0</span>
+            </div>
+            <div class="meter"><span id="meterFill"></span></div>
+            <p id="progressText">Complete activities to charge the lab.</p>
+          </article>
+        </section>
+
+        <section class="theory-grid">
+          <article class="panel theory-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Theory lab</p>
+                <h2 id="theoryTitle"></h2>
+              </div>
+            </div>
+            <div id="theoryBody" class="theory-body"></div>
+          </article>
+
+          <article class="panel visual-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Mental model</p>
+                <h2 id="visualTitle"></h2>
+              </div>
+            </div>
+            <div id="lessonVisual" class="lesson-visual"></div>
+          </article>
+        </section>
+
+        <section class="activity-tabs" aria-label="Activity selector">
+          <button class="tab active" data-tab="quiz">Quiz</button>
+          <button class="tab" data-tab="drag">Drag Code</button>
+          <button class="tab" data-tab="fill">Code Blanks</button>
+          <button class="tab" data-tab="crossword">Crossword</button>
+          <button class="tab" data-tab="runner">Java Runner</button>
+        </section>
+
+        <section id="quiz" class="activity active panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Game 1</p>
+              <h2>Concept Clash</h2>
+            </div>
+            <div class="button-row">
+              <button id="newQuiz" class="tab">New</button>
+              <button id="checkQuiz" class="primary-button">Check</button>
+            </div>
+          </div>
+          <p id="quizPrompt" class="activity-copy"></p>
+          <div id="quizOptions" class="option-grid"></div>
+          <p id="quizFeedback" class="feedback" aria-live="polite"></p>
+        </section>
+
+        <section id="drag" class="activity panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Game 2</p>
+              <h2>Build the Class</h2>
+            </div>
+            <button id="checkDrag" class="primary-button">Run Check</button>
+          </div>
+          <p class="activity-copy">Drag the shuffled lines into a valid order.</p>
+          <div id="dragList" class="drag-list"></div>
+          <p id="dragFeedback" class="feedback" aria-live="polite"></p>
+        </section>
+
+        <section id="fill" class="activity panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Game 3</p>
+              <h2>Patch the Code</h2>
+            </div>
+            <button id="checkFill" class="primary-button">Check Blanks</button>
+          </div>
+          <div id="fillChallenge" class="code-card"></div>
+          <p id="fillFeedback" class="feedback" aria-live="polite"></p>
+        </section>
+
+        <section id="crossword" class="activity panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Game 4</p>
+              <h2>Java Crossword</h2>
+            </div>
+            <div class="button-row">
+              <button id="revealCrossword" class="tab">Reveal Answers</button>
+              <button id="checkCrossword" class="primary-button">Check Grid</button>
+            </div>
+          </div>
+          <div class="crossword-layout">
+            <div id="crosswordGrid" class="crossword-grid" aria-label="Java crossword"></div>
+            <div>
+              <h3>Clues</h3>
+              <div class="clue-columns">
+                <section>
+                  <h4>Across</h4>
+                  <ol id="acrossClues" class="clues"></ol>
+                </section>
+                <section>
+                  <h4>Down</h4>
+                  <ol id="downClues" class="clues"></ol>
+                </section>
+              </div>
+            </div>
+          </div>
+          <p id="crosswordFeedback" class="feedback" aria-live="polite"></p>
+        </section>
+
+        <section id="runner" class="activity panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Live practice</p>
+              <h2>Java Runner</h2>
+            </div>
+            <button id="runJava" class="primary-button">Compile & Run</button>
+          </div>
+          <textarea id="javaEditor" spellcheck="false"></textarea>
+          <pre id="runnerOutput" class="runner-output" aria-live="polite"></pre>
+        </section>
+
+      </main>
+    </div>
+
+    <button id="javaCoach" class="java-coach" type="button" aria-label="Java fact coach">
+      <span class="coach-card" id="coachFact">Hover for a Java fact.</span>
+      <span class="coach-person" aria-hidden="true">
+        <span class="coach-head"></span>
+        <span class="coach-face"></span>
+        <span class="coach-body"></span>
+        <span class="coach-cup"></span>
+      </span>
+    </button>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
