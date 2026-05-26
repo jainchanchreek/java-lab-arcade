@@ -216,6 +216,41 @@ main {
   padding-left: 20px;
 }
 
+.chapter-sections {
+  display: grid;
+  gap: 10px;
+}
+
+.chapter-section {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.chapter-section summary {
+  min-height: 46px;
+  padding: 12px 14px;
+  color: var(--ink);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.chapter-section-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 14px 14px;
+}
+
+.chapter-section-body p {
+  color: var(--muted);
+}
+
+.chapter-section-body ul {
+  display: grid;
+  gap: 6px;
+}
+
 .theory-note {
   padding: 12px;
   border-left: 4px solid var(--gold);
@@ -257,6 +292,69 @@ main {
 
 .load-mission {
   justify-self: start;
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.memory-card {
+  min-height: 168px;
+  padding: 14px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.memory-card:hover,
+.memory-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--blue);
+}
+
+.memory-card.revealed {
+  border-color: var(--mint);
+  background: #effcf7;
+}
+
+.card-kicker {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--mint-dark);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card-front,
+.card-back {
+  display: block;
+  line-height: 1.45;
+}
+
+.card-front {
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.card-back {
+  display: none;
+  color: var(--muted);
+}
+
+.memory-card.revealed .card-front {
+  display: none;
+}
+
+.memory-card.revealed .card-back {
+  display: block;
 }
 
 .lesson-visual {
@@ -776,7 +874,8 @@ main {
   }
 
   .module-nav,
-  .option-grid {
+  .option-grid,
+  .memory-grid {
     grid-template-columns: 1fr;
   }
 

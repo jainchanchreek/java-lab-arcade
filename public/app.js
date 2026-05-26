@@ -737,10 +737,23 @@ function renderTheory() {
   const extra = lessonExtras[currentModule];
   const moves = getCoreMoves(currentModule);
   const missions = getPracticeMissions(currentModule);
+  const sections = getChapterSections(currentModule);
   $("#theoryTitle").textContent = extra.title;
   $("#visualTitle").textContent = modules[currentModule].title;
   $("#theoryBody").innerHTML = `
     ${extra.theory.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+    <h3>Chapter sections</h3>
+    <div class="chapter-sections">
+      ${sections.map((section, index) => `
+        <details class="chapter-section" ${index === 0 ? "open" : ""}>
+          <summary>${escapeHtml(section.title)}</summary>
+          <div class="chapter-section-body">
+            <p>${escapeHtml(section.body)}</p>
+            <ul>${section.points.map(point => `<li>${escapeHtml(point)}</li>`).join("")}</ul>
+          </div>
+        </details>
+      `).join("")}
+    </div>
     <h3>Core moves</h3>
     <ul>${moves.map(move => `<li>${escapeHtml(move)}</li>`).join("")}</ul>
     <h3>Practice missions</h3>
@@ -767,6 +780,26 @@ function renderTheory() {
       document.querySelector('[data-tab="runner"]').classList.add("active");
       $("#runner").classList.add("active");
       $("#runner").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+}
+
+function renderCards() {
+  const cards = shuffle(getMemoryCards(currentModule)).slice(0, 9);
+  $("#cardsFeedback").textContent = "";
+  $("#memoryCards").innerHTML = cards.map((card, index) => `
+    <button class="memory-card" data-card="${index}">
+      <span class="card-kicker">${escapeHtml(card.kicker)}</span>
+      <span class="card-front">${escapeHtml(card.front)}</span>
+      <span class="card-back">${escapeHtml(card.back)}</span>
+    </button>
+  `).join("");
+  document.querySelectorAll(".memory-card").forEach(card => {
+    card.addEventListener("click", () => {
+      card.classList.toggle("revealed");
+      const revealed = document.querySelectorAll(".memory-card.revealed").length;
+      const total = document.querySelectorAll(".memory-card").length;
+      $("#cardsFeedback").textContent = `${revealed}/${total} cards revealed.`;
     });
   });
 }
@@ -1286,10 +1319,358 @@ function getPracticeMissions(index) {
   ];
 }
 
+function getChapterSections(index) {
+  const deepDives = [
+    [
+      {
+        title: "What the JVM is looking for",
+        body: "A beginner Java program starts with a class and a very specific main method. The JVM does not guess; it looks for the agreed entry point and begins running statements inside it.",
+        points: ["The public class name normally matches the file name.", "Statements run in order unless control flow changes that path.", "Compile errors happen before the program starts running."]
+      },
+      {
+        title: "Print, compile, run, observe",
+        body: "The fastest way to learn early Java is to make tiny changes and observe the compiler or output. A one-line output program can teach class syntax, method calls, strings, and semicolons.",
+        points: ["println adds a newline; print does not.", "A missing quote, brace, or semicolon changes the compiler message.", "Treat errors as coordinates: line, symbol, and expectation."]
+      },
+      {
+        title: "Code shape checklist",
+        body: "Before debugging meaning, check structure. Java syntax is strict, and early mistakes are often shape mistakes rather than deep logic problems.",
+        points: ["Every opening brace needs a matching closing brace.", "Strings live inside double quotes.", "Method calls use parentheses, even when there are no arguments."]
+      }
+    ],
+    [
+      {
+        title: "Classes are blueprints",
+        body: "A class describes what objects know and do. It is not the object itself; it is the plan Java uses to create objects.",
+        points: ["Fields hold object state.", "Methods define object behavior.", "new asks Java to build an object from the class."]
+      },
+      {
+        title: "Objects carry their own state",
+        body: "Two objects from the same class can have different field values. Method behavior can change because it reads the object's current fields.",
+        points: ["Changing one object's field does not change another object's field.", "A reference variable lets code talk to a particular object.", "Moving behavior into methods keeps main from becoming a junk drawer."]
+      },
+      {
+        title: "Messages to objects",
+        body: "When you call a method, you are asking an object or class to do work. The dot operator connects the reference to the member you want.",
+        points: ["dog.bark() calls bark on the object referenced by dog.", "dog.name accesses a field.", "Good method names sound like actions."]
+      }
+    ],
+    [
+      {
+        title: "Primitive values vs references",
+        body: "Primitive variables hold values directly. Object variables hold references, which are ways to reach objects living elsewhere in memory.",
+        points: ["int b = a copies the int value.", "Dog d2 = d1 copies the reference, not the Dog object.", "Two references can point to the same object."]
+      },
+      {
+        title: "Arrays are objects",
+        body: "An array variable is a reference to an array object. The array has fixed length, indexed slots, and a type that every element must match.",
+        points: ["Indexes start at 0.", "The last valid index is length - 1.", "Array length is a field: scores.length."]
+      },
+      {
+        title: "Reference bugs",
+        body: "If changing through one variable seems to affect another, ask whether both variables point to the same object.",
+        points: ["Draw boxes for objects and arrows for references.", "Assignment between references copies the arrow.", "new creates a separate object."]
+      }
+    ],
+    [
+      {
+        title: "Methods make behavior reusable",
+        body: "A method packages a block of behavior behind a name. Parameters carry values in, and return sends one value back to the caller.",
+        points: ["A void method performs work without returning a value.", "A non-void method must return a compatible value.", "Small methods are easier to test and reason about."]
+      },
+      {
+        title: "Decisions and repetition",
+        body: "if chooses a path; loops repeat a path. Together they let one program handle many inputs instead of one fixed situation.",
+        points: ["Use if/else for mutually exclusive choices.", "Use for when a counter or range is natural.", "Use while when repetition depends on a condition becoming false."]
+      },
+      {
+        title: "Scope and lifetime",
+        body: "Variables declared inside a block belong to that block. This helps avoid accidental reuse, but it also means variables can disappear before you expect.",
+        points: ["Method parameters are local variables.", "Loop variables declared in the for header live in the loop.", "Fields live as long as the object lives."]
+      }
+    ],
+    [
+      {
+        title: "Polymorphism in one sentence",
+        body: "Polymorphism lets code use a general type while the actual object supplies the specific behavior.",
+        points: ["Animal a = new Cat() is allowed when Cat extends Animal.", "The reference type controls what methods you may call.", "The object type controls which overridden method body runs."]
+      },
+      {
+        title: "Inheritance with restraint",
+        body: "Inheritance is powerful, but it should describe a real is-a relationship. If one class merely uses another, composition is usually clearer.",
+        points: ["A Cat is an Animal.", "A Car has an Engine.", "Inheritance shares behavior; composition assembles behavior."]
+      },
+      {
+        title: "Overriding rules",
+        body: "Overriding keeps the method contract but changes the implementation in a subclass.",
+        points: ["The method name and parameters must match.", "The subclass method should be compatible with the superclass method.", "Overriding is not the same as overloading."]
+      }
+    ],
+    [
+      {
+        title: "Library mindset",
+        body: "The Java library is a toolbox. A lot of practical Java skill comes from recognizing when the library already has the class you need.",
+        points: ["Use import to refer to library classes by short names.", "Read method names before writing your own utility.", "The API docs are part of the language-learning process."]
+      },
+      {
+        title: "ArrayList as a first tool",
+        body: "ArrayList shows why libraries matter: you get a growable list with add, get, size, and remove without building the data structure yourself.",
+        points: ["ArrayList grows; arrays have fixed length.", "ArrayList uses size(), arrays use length.", "Generics make the element type clear."]
+      },
+      {
+        title: "Choosing imports",
+        body: "Imports do not copy code into your file. They let the compiler resolve class names from packages.",
+        points: ["java.util.ArrayList is the fully qualified name.", "import java.util.ArrayList lets you write ArrayList.", "Avoid importing packages you do not use."]
+      }
+    ],
+    [
+      {
+        title: "Design for change",
+        body: "OO design asks what might vary and what should stay stable. Good class boundaries make future changes cheaper.",
+        points: ["Put common behavior where it belongs.", "Prefer clear responsibilities over clever inheritance trees.", "Use encapsulation to protect object state."]
+      },
+      {
+        title: "Is-a vs has-a",
+        body: "The is-a test helps decide inheritance; the has-a test helps decide composition. Mixing them up makes code awkward fast.",
+        points: ["Subclass when substituting the child for the parent makes sense.", "Use fields when an object owns or uses another object.", "Composition often keeps designs more flexible."]
+      },
+      {
+        title: "Protected variation",
+        body: "A stable interface with variable implementations lets code change behind the boundary without breaking callers.",
+        points: ["Callers should not need to know every detail.", "Private fields reduce accidental coupling.", "Method names become the object's public vocabulary."]
+      }
+    ],
+    [
+      {
+        title: "Abstract classes",
+        body: "An abstract class is a partial blueprint. It can provide shared code while requiring subclasses to complete the missing pieces.",
+        points: ["You cannot instantiate an abstract class directly.", "Abstract methods have no body.", "Concrete subclasses must implement inherited abstract methods."]
+      },
+      {
+        title: "Interfaces",
+        body: "An interface describes a capability. It is useful when unrelated classes should be used through the same set of method promises.",
+        points: ["A class implements an interface.", "Interface variables can point at any compatible implementation.", "Interfaces support flexible code without forcing one superclass."]
+      },
+      {
+        title: "Choosing between them",
+        body: "Use abstract classes for shared base behavior and interfaces for shared capability.",
+        points: ["Abstract class: shared state or helper methods.", "Interface: promise that many classes can fulfill.", "Many designs use both together."]
+      }
+    ],
+    [
+      {
+        title: "Constructors initialize objects",
+        body: "A constructor runs when new creates an object. Its job is to leave the object in a usable starting state.",
+        points: ["Constructor name matches the class name.", "Constructors do not declare a return type.", "Constructor parameters can require important starting values."]
+      },
+      {
+        title: "The heap and references",
+        body: "Objects live on the heap, and reference variables point to them. The reference is not the object; it is the way to reach the object.",
+        points: ["new creates a fresh object.", "Assignment copies references.", "Unreachable objects can be garbage collected."]
+      },
+      {
+        title: "this",
+        body: "this means the current object. It is useful when a field and a parameter have the same name.",
+        points: ["this.name means the object's field.", "name alone may refer to the nearest local variable or parameter.", "Using this can make constructor code clearer."]
+      }
+    ],
+    [
+      {
+        title: "Static belongs to the class",
+        body: "A static member is associated with the class itself rather than any one object.",
+        points: ["Static fields are shared.", "Static methods do not need an object.", "main is static because the JVM calls it before creating your objects."]
+      },
+      {
+        title: "Wrappers and formatting",
+        body: "Wrapper classes such as Integer and Double let primitive values work in object-based APIs.",
+        points: ["Integer wraps int.", "Autoboxing can convert between primitive and wrapper forms.", "Formatting turns values into human-friendly strings."]
+      },
+      {
+        title: "Math utilities",
+        body: "Math is a utility class full of static methods. You call Math.round, Math.max, and Math.random without creating a Math object.",
+        points: ["Math methods are class-level tools.", "Casting can change numeric type.", "Be explicit when integer division would surprise you."]
+      }
+    ],
+    [
+      {
+        title: "Exceptions represent failure paths",
+        body: "An exception is an object that interrupts the normal path and carries information about what went wrong.",
+        points: ["try surrounds risky code.", "catch handles matching exception types.", "finally is useful for cleanup."]
+      },
+      {
+        title: "Recover or report",
+        body: "Do not catch exceptions just to hide them. Catch when you can recover, explain, retry, or clean up.",
+        points: ["Catch specific exception types first.", "Print helpful messages while learning.", "Let unrecoverable errors surface during development."]
+      },
+      {
+        title: "Checked vs unchecked",
+        body: "Some exceptions must be handled or declared; others signal programming problems and can appear without a compiler requirement.",
+        points: ["IOException is checked.", "NumberFormatException is unchecked.", "The compiler's rules push you to notice risky APIs."]
+      }
+    ],
+    [
+      {
+        title: "Event-driven thinking",
+        body: "GUI code often waits. Instead of a straight top-to-bottom script, the program responds when events occur.",
+        points: ["A click is an event.", "A listener receives the event.", "A callback method contains the reaction."]
+      },
+      {
+        title: "Inner classes",
+        body: "Small listener classes are often written close to where they are used, because the behavior belongs to that button or component.",
+        points: ["Anonymous classes are one-use implementations.", "They can keep event code near setup code.", "Modern Java often uses lambdas for simple listeners."]
+      },
+      {
+        title: "State and UI",
+        body: "UI events usually read or change state. Keep the state clear, or callbacks become hard to follow.",
+        points: ["Separate display from data when possible.", "Name event methods after the user action.", "Keep callbacks short."]
+      }
+    ],
+    [
+      {
+        title: "Components and containers",
+        body: "A component is a UI piece; a container holds UI pieces. Layout managers decide where pieces go.",
+        points: ["Button, label, and text field are components.", "Panels group components.", "Frames are top-level windows."]
+      },
+      {
+        title: "Layout managers",
+        body: "A layout manager turns rules into positions. This is better than hardcoding every pixel because windows and content sizes change.",
+        points: ["BorderLayout thinks in regions.", "FlowLayout places items in a row-like flow.", "GridLayout creates equal cells."]
+      },
+      {
+        title: "Why Swing still teaches useful ideas",
+        body: "Even if you use newer UI frameworks, the core ideas remain: components, containers, events, and state.",
+        points: ["UI is object composition.", "Events connect user action to code.", "Layout is a separate concern from behavior."]
+      }
+    ],
+    [
+      {
+        title: "Streams",
+        body: "A stream is a flow of data. Your program can read from a source or write to a destination without knowing every detail at once.",
+        points: ["Input streams bring bytes in.", "Output streams send bytes out.", "Readers and writers handle characters."]
+      },
+      {
+        title: "Serialization",
+        body: "Serialization stores object state in a form that can be written out and read back later.",
+        points: ["It saves state, not behavior.", "Class changes can complicate old serialized data.", "Explicit formats are often easier for long-term data."]
+      },
+      {
+        title: "Resource cleanup",
+        body: "Files and streams are external resources. Closing them tells the operating system you are done.",
+        points: ["Use finally or try-with-resources in modern Java.", "Flush output when necessary.", "Handle I/O failures honestly."]
+      }
+    ],
+    [
+      {
+        title: "Sockets as conversations",
+        body: "Networking code connects programs across a boundary. One side sends bytes, the other receives bytes.",
+        points: ["A client initiates a connection.", "A server waits for connections.", "Network calls can be slow or fail."]
+      },
+      {
+        title: "Threads",
+        body: "A thread is an independent path of execution. It lets one program do more than one thing over time.",
+        points: ["Runnable packages work.", "Thread.start begins a new execution path.", "Thread.join waits for that path to finish."]
+      },
+      {
+        title: "Concurrency caution",
+        body: "Threads become tricky when they share mutable data. The question is not just what code runs, but when it runs relative to other code.",
+        points: ["Avoid shared state while learning.", "Use immutable data when possible.", "Print thread names to see execution order."]
+      }
+    ],
+    [
+      {
+        title: "List, Set, Map",
+        body: "Collections are chosen by behavior. List preserves order, Set enforces uniqueness, and Map connects keys to values.",
+        points: ["List: indexed sequence.", "Set: unique elements.", "Map: key-value lookup."]
+      },
+      {
+        title: "Generics",
+        body: "Generics make the element type part of the collection declaration. That lets the compiler catch mistakes earlier.",
+        points: ["ArrayList<String> stores strings.", "HashMap<String, Integer> maps names to numbers.", "Generic types reduce casting."]
+      },
+      {
+        title: "Equality and hashing",
+        body: "Some collections rely on equality and hashing. Objects used as Set elements or Map keys should have sensible equality behavior.",
+        points: ["equals answers whether two objects should count as equal.", "hashCode helps hash-based collections organize data.", "Bad equality rules make lookup surprising."]
+      }
+    ],
+    [
+      {
+        title: "Packages",
+        body: "Packages group classes into namespaces. They reduce name collisions and make project structure understandable.",
+        points: ["Package names usually use reverse-domain style.", "Folders mirror package names.", "Imports refer to packaged classes."]
+      },
+      {
+        title: "JAR files",
+        body: "A JAR bundles compiled classes and resources into one file that can be shared or executed.",
+        points: ["A manifest can name the main class.", "Libraries are often distributed as JARs.", "The classpath tells Java where to find them."]
+      },
+      {
+        title: "Deployment mindset",
+        body: "Releasing code means thinking beyond compilation: dependencies, entry points, environment, and repeatability matter.",
+        points: ["Know how to rebuild the app.", "Know what Java version it expects.", "Keep source, compiled output, and config responsibilities clear."]
+      }
+    ],
+    [
+      {
+        title: "Remote boundaries",
+        body: "Distributed computing means code communicates across process or machine boundaries. Calls can be slower and less reliable than local method calls.",
+        points: ["Latency matters.", "Failure is normal.", "Retries and timeouts become design concerns."]
+      },
+      {
+        title: "Contracts",
+        body: "A service contract defines what request shape is accepted and what response shape is returned.",
+        points: ["The caller should not know internal implementation.", "The service owns the work.", "Versioning matters when clients depend on the contract."]
+      },
+      {
+        title: "Legacy ideas, modern lesson",
+        body: "Older Java distributed technologies are historically useful, but the lasting idea is boundary-aware design.",
+        points: ["Remote objects still need clear interfaces.", "Serialization format matters.", "Networked systems require observability and error handling."]
+      }
+    ]
+  ];
+  return deepDives[index] || [
+    {
+      title: `${modules[index].title} overview`,
+      body: `This chapter connects ${modules[index].concepts.join(", ")} into a working mental model.`,
+      points: ["Name the concept.", "Predict behavior.", "Run a tiny example.", "Explain the result in your own words."]
+    }
+  ];
+}
+
+function getMemoryCards(index) {
+  const module = modules[index];
+  const sections = getChapterSections(index);
+  const extra = lessonExtras[index];
+  const conceptCards = module.concepts.map(concept => ({
+    kicker: "Concept",
+    front: concept,
+    back: `Explain where ${concept} appears in ${module.title}, then find or run one tiny example.`
+  }));
+  const sectionCards = sections.flatMap(section => [
+    {
+      kicker: "Rule",
+      front: section.title,
+      back: section.body
+    },
+    ...section.points.slice(0, 2).map(point => ({
+      kicker: "Remember",
+      front: point,
+      back: `Why it matters: ${section.title.toLowerCase()} helps you predict code instead of guessing.`
+    }))
+  ]);
+  const quizCards = extra.quizzes.map(quiz => ({
+    kicker: "Checkpoint",
+    front: quiz.prompt,
+    back: quiz.explain
+  }));
+  return [...conceptCards, ...sectionCards, ...quizCards];
+}
+
 function renderAll() {
   renderModules();
   renderLesson();
   renderTheory();
+  renderCards();
   renderQuiz();
   renderDrag();
   renderFill();
@@ -1335,6 +1716,21 @@ $("#checkQuiz").addEventListener("click", () => {
 $("#newQuiz").addEventListener("click", () => {
   selectedQuiz = null;
   renderQuiz();
+});
+
+$("#shuffleCards").addEventListener("click", () => {
+  renderCards();
+});
+
+$("#rememberCards").addEventListener("click", () => {
+  const total = document.querySelectorAll(".memory-card").length;
+  const revealed = document.querySelectorAll(".memory-card.revealed").length;
+  if (revealed < Math.min(3, total)) {
+    $("#cardsFeedback").textContent = "Flip at least three cards before banking the memory boost.";
+    return;
+  }
+  $("#cardsFeedback").textContent = "Memory boost banked. Come back later and see if it still sticks.";
+  award(6);
 });
 
 $("#checkDrag").addEventListener("click", () => {

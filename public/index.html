@@ -79,6 +79,7 @@
 
         <section class="activity-tabs" aria-label="Activity selector">
           <button class="tab active" data-tab="quiz">Quiz</button>
+          <button class="tab" data-tab="cards">Memory Cards</button>
           <button class="tab" data-tab="drag">Drag Code</button>
           <button class="tab" data-tab="fill">Code Blanks</button>
           <button class="tab" data-tab="crossword">Crossword</button>
@@ -101,10 +102,26 @@
           <p id="quizFeedback" class="feedback" aria-live="polite"></p>
         </section>
 
-        <section id="drag" class="activity panel">
+        <section id="cards" class="activity panel">
           <div class="panel-heading">
             <div>
               <p class="eyebrow">Game 2</p>
+              <h2>Memory Cards</h2>
+            </div>
+            <div class="button-row">
+              <button id="shuffleCards" class="tab">Shuffle</button>
+              <button id="rememberCards" class="primary-button">I Remember These</button>
+            </div>
+          </div>
+          <p class="activity-copy">Flip each card to test the key idea, then mark the set remembered.</p>
+          <div id="memoryCards" class="memory-grid"></div>
+          <p id="cardsFeedback" class="feedback" aria-live="polite"></p>
+        </section>
+
+        <section id="drag" class="activity panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Game 3</p>
               <h2>Build the Class</h2>
             </div>
             <button id="checkDrag" class="primary-button">Run Check</button>
@@ -117,7 +134,7 @@
         <section id="fill" class="activity panel">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">Game 3</p>
+              <p class="eyebrow">Game 4</p>
               <h2>Patch the Code</h2>
             </div>
             <button id="checkFill" class="primary-button">Check Blanks</button>
@@ -129,7 +146,7 @@
         <section id="crossword" class="activity panel">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">Game 4</p>
+              <p class="eyebrow">Game 5</p>
               <h2>Java Crossword</h2>
             </div>
             <div class="button-row">
